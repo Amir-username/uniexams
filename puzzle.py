@@ -1,4 +1,15 @@
 import random
+import time
+from threading import Thread
+
+seconds = 10
+
+
+def timer():
+    global seconds
+    while seconds > 0:
+        time.sleep(1)
+        seconds -= 1
 
 
 def print_pattern(pattern, pattern_name):
@@ -78,12 +89,13 @@ else:
 count = 30
 
 
-def print_puzzle(puzzle__):
+def print_puzzle(puzzle__, sec):
     print("--------------------------------------------------")
     for row in puzzle__:
         print(f'{row}\n')
     print("--------------------------------------------------")
     print(f'moves: {count}')
+    print(f'time: {sec}')
 
 
 def find_empty(arr):
@@ -119,71 +131,90 @@ shuffle(puzzle)
 
 print("\n game is started \n")
 
-print_puzzle(puzzle)
+print_puzzle(puzzle, seconds)
 
-while True:
-    if count == 0:
-        print("you loss")
-        break
 
-    if puzzle == result:
-        print("you solved the puzzle!!!")
-        break
-
-    move = input("enter direction: ")
-
-    if move == "left":
-        x, y = find_empty(puzzle)
-
-        if y < 2:
-            puzzle[x][y], puzzle[x][y + 1] = puzzle[x][y + 1], puzzle[x][y]
-            count = count - 1
-
-            print_puzzle(puzzle)
-            continue
+def game():
+    global seconds
+    global count
+    while True:
+        if seconds == 0:
+            print("game over")
+            break
         else:
-            print("this move is not legal")
-            continue
+            move = input("enter direction: ")
 
-    if move == "right":
-        x, y = find_empty(puzzle)
+        if count == 0:
+            print("you loss")
+            break
 
-        if y > 0:
-            puzzle[x][y], puzzle[x][y - 1] = puzzle[x][y - 1], puzzle[x][y]
-            count = count - 1
+        if puzzle == result:
+            print("you solved the puzzle!!!")
+            break
 
-            print_puzzle(puzzle)
-            continue
-        else:
-            print("this move is not legal")
-            continue
+        if move == "left":
+            x, y = find_empty(puzzle)
 
-    if move == "up":
-        x, y = find_empty(puzzle)
+            if y < 2:
+                puzzle[x][y], puzzle[x][y + 1] = puzzle[x][y + 1], puzzle[x][y]
+                count = count - 1
 
-        if x < 2:
-            puzzle[x + 1][y], puzzle[x][y] = puzzle[x][y], puzzle[x + 1][y]
-            count = count - 1
+                print_puzzle(puzzle, seconds)
+                continue
+            else:
+                print("this move is not legal")
+                continue
 
-            print_puzzle(puzzle)
-            continue
+        if move == "right":
+            x, y = find_empty(puzzle)
 
-        else:
-            print("this move is not legal")
-            continue
+            if y > 0:
+                puzzle[x][y], puzzle[x][y - 1] = puzzle[x][y - 1], puzzle[x][y]
+                count = count - 1
 
-    if move == "down":
-        x, y = find_empty(puzzle)
+                print_puzzle(puzzle, seconds)
+                continue
+            else:
+                print("this move is not legal")
+                continue
 
-        if x > 0:
-            puzzle[x - 1][y], puzzle[x][y] = puzzle[x][y], puzzle[x - 1][y]
-            count = count - 1
+        if move == "up":
+            x, y = find_empty(puzzle)
 
-            print_puzzle(puzzle)
-            continue
-        else:
-            print("this move is not legal")
-            continue
+            if x < 2:
+                puzzle[x + 1][y], puzzle[x][y] = puzzle[x][y], puzzle[x + 1][y]
+                count = count - 1
 
-    if move == "exit":
-        break
+                print_puzzle(puzzle, seconds)
+                continue
+
+            else:
+                print("this move is not legal")
+                continue
+
+        if move == "down":
+            x, y = find_empty(puzzle)
+
+            if x > 0:
+                puzzle[x - 1][y], puzzle[x][y] = puzzle[x][y], puzzle[x - 1][y]
+                count = count - 1
+
+                print_puzzle(puzzle, seconds)
+                continue
+            else:
+                print("this move is not legal")
+                continue
+
+        if move == "exit":
+            break
+
+
+time_thread = Thread(target=timer)
+game_thread = Thread(target=game)
+
+time_thread.start()
+game_thread.start()
+
+
+time_thread.join()
+game_thread.join()
