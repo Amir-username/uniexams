@@ -69,7 +69,7 @@ frontier = []
 i = 0
 
 while True:
-    if node.puzzle == result:
+    if node.puzzle or new_node == result:
         break
 
     valid_actions = []
@@ -89,39 +89,37 @@ while True:
         valid_actions.append('right')
 
     if 'up' in valid_actions:
-        node_up = node
+        node_up = PuzzleNode(node.puzzle, 'up')
         node_up.puzzle[row][col], node_up.puzzle[
             row + 1][col] = node_up.puzzle[row + 1][col], node_up.puzzle[row][col]
-        node_up.action = 'up'
 
         frontier.append(node_up)
 
     if 'down' in valid_actions:
-        node_down = node
+        node_down = PuzzleNode(node.puzzle, 'down')
         node_down.puzzle[row][col], node_down.puzzle[
             row - 1][col] = node_down.puzzle[row - 1][col], node_down.puzzle[row][col]
-        node_down.action = 'down'
 
         frontier.append(node_down)
 
     if 'left' in valid_actions:
-        node_left = node
+        node_left = PuzzleNode(node.puzzle, 'left')
         node_left.puzzle[row][col], node_left.puzzle[row][col +
                                     1] = node_left.puzzle[row][col + 1], node_left.puzzle[row][col]
-        node_left.action = 'left'
 
         frontier.append(node_left)
 
     if 'right' in valid_actions:
-        node_right = node
+        node_right = PuzzleNode(node.puzzle, 'right')
         node_right.puzzle[row][col], node_right.puzzle[row][col -
                                     1] = node_right.puzzle[row][col - 1], node_right.puzzle[row][col]
-        node_right.action = 'right'
 
         frontier.append(node_right)
 
     new_node = PuzzleNode(frontier[i].puzzle, frontier[i].action)
+    frontier.pop()
     i += 1
+
 
 
 for f in frontier:
